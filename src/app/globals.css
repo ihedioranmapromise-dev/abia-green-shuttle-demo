@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-[#f3f7f4] text-abia-ink antialiased;
+  background-image: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(11, 107, 58, 0.08), transparent);
+  min-height: 100vh;
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-abia-line bg-white/90 shadow-sm;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-xl bg-abia px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-abia-dark disabled:opacity-50;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-xl border border-abia-line bg-white px-4 py-2.5 text-sm font-semibold text-abia-ink transition hover:bg-abia-soft;
+  }
+}
