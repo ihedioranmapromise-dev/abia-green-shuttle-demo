@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { BUSES, ROUTES } from "@/lib/data";
+import { BUSES, ROUTES, formatNaira } from "@/lib/data";
 
 export default function PassengerPage() {
   const [routeId, setRouteId] = useState(ROUTES[0].id);
@@ -11,9 +11,11 @@ export default function PassengerPage() {
   const nextBuses = useMemo(
     () =>
       BUSES.filter(
-        (b) => b.route === route.name && (b.status === "on-route" || b.status === "at-terminal")
+        (b) =>
+          b.routeId === routeId &&
+          (b.status === "on-route" || b.status === "at-terminal")
       ).sort((a, b) => (a.etaMin ?? 99) - (b.etaMin ?? 99)),
-    [route.name]
+    [routeId]
   );
 
   return (
@@ -24,15 +26,18 @@ export default function PassengerPage() {
             ← Home
           </Link>
           <span className="text-sm font-semibold">Passenger</span>
-          <Link href="/ops" className="text-sm font-medium text-abia">
-            Ops
+          <Link href="/wallet" className="text-sm font-medium text-abia">
+            Wallet
           </Link>
         </div>
       </header>
 
       <main className="mx-auto max-w-lg px-4 py-6">
         <h1 className="text-xl font-semibold tracking-tight">When is my bus?</h1>
-        <p className="mt-1 text-sm text-abia-muted">Green Shuttle · live demo times</p>
+        <p className="mt-1 text-sm text-abia-muted">
+          Fare {formatNaira(route.subsidisedFare)}{" "}
+          <span className="text-abia-muted/80">(subsidised · full {formatNaira(route.fullFare)})</span>
+        </p>
 
         <label className="mt-5 block text-xs font-semibold uppercase tracking-wide text-abia-muted">
           Route
@@ -56,24 +61,36 @@ export default function PassengerPage() {
           </div>
           <ul className="divide-y divide-abia-line">
             {nextBuses.length === 0 && (
-              <li className="px-4 py-6 text-sm text-abia-muted">No active buses on this route in demo data.</li>
+              <li className="px-4 py-6 text-sm text-abia-muted">No active buses on this route in demo.</li>
             )}
             {nextBuses.map((b) => (
-              <li key={b.id} className="flex items-center justify-between gap-3 px-4 py-4">
-                <div>
-                  <p className="font-mono text-xs text-abia-muted">{b.id}</p>
-                  <p className="text-sm font-semibold">{b.nextStop}</p>
-                  <p className="text-xs text-abia-muted">{b.plate}</p>
+              <li key={b.id} className="px-4 py-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="font-mono text-xs text-abia-muted">{b.id}</p>
+                    <p className="text-sm font-semibold">{b.nextStop}</p>
+                    {b.load != null && b.status === "on-route" && (
+                      <p className="text-xs text-abia-muted">{b.load}% full</p>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    {b.status === "at-terminal" ? (
+                      <p className="text-sm font-semibold text-sky-700">At terminal</p>
+                    ) : (
+                      <p className="text-2xl font-semibold text-abia">
+                        {b.etaMin}
+                        <span className="text-sm font-medium"> min</span>
+                      </p>
+                    )}
+                  </div>
                 </div>
-                <div className="text-right">
-                  {b.status === "at-terminal" ? (
-                    <p className="text-sm font-semibold text-sky-700">At terminal</p>
-                  ) : (
-                    <p className="text-2xl font-semibold text-abia">{b.etaMin}<span className="text-sm font-medium"> min</span></p>
-                  )}
-                  {b.load != null && b.status === "on-route" && (
-                    <p className="text-xs text-abia-muted">{b.load}% full</p>
-                  )}
+                <div className="mt-3 flex gap-2">
+                  <Link href={`/track/${b.id}`} className="btn-primary text-xs py-1.5">
+                    Track this bus
+                  </Link>
+                  <Link href={`/wallet?pay=${route.id}&bus=${b.id}`} className="btn-secondary text-xs py-1.5">
+                    Pay trip
+                  </Link>
                 </div>
               </li>
             ))}
@@ -92,8 +109,11 @@ export default function PassengerPage() {
               </li>
             ))}
           </ol>
-          <p className="mt-3 text-xs text-abia-muted">{route.fareNote}</p>
         </div>
+
+        <Link href="/report" className="btn-secondary mt-4 flex w-full justify-center">
+          Something wrong? Report issue
+        </Link>
       </main>
     </div>
   );

@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { BUSES, statusColor, statusLabel, type Bus, type BusStatus } from "@/lib/data";
+import {
+  BUSES,
+  statusColor,
+  statusLabel,
+  type Bus,
+  type BusStatus,
+} from "@/lib/data";
 
 export default function OpsPage() {
   const [buses, setBuses] = useState<Bus[]>(BUSES);
@@ -29,15 +35,15 @@ export default function OpsPage() {
             ← Home
           </Link>
           <span className="text-sm font-semibold">Ops desk</span>
-          <Link href="/passenger" className="text-sm font-medium text-abia">
-            Passenger
+          <Link href="/terminal" className="text-sm font-medium text-abia">
+            Terminal
           </Link>
         </div>
       </header>
 
       <main className="mx-auto max-w-3xl px-4 py-6">
         <h1 className="text-xl font-semibold tracking-tight">Fleet board</h1>
-        <p className="mt-1 text-sm text-abia-muted">Demo · change status to simulate the desk</p>
+        <p className="mt-1 text-sm text-abia-muted">Change status to simulate control room</p>
 
         <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
           {([
@@ -78,6 +84,9 @@ export default function OpsPage() {
                 </span>
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
+                <Link href={`/track/${b.id}`} className="btn-secondary text-xs py-1.5">
+                  Track
+                </Link>
                 {(["on-route", "at-terminal", "charging", "maintenance"] as BusStatus[]).map(
                   (s) => (
                     <button

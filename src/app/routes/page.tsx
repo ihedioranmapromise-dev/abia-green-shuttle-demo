@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ROUTES } from "@/lib/data";
+import { ROUTES, formatNaira } from "@/lib/data";
 
 export default function RoutesPage() {
   return (
@@ -10,12 +10,13 @@ export default function RoutesPage() {
             ← Home
           </Link>
           <span className="text-sm font-semibold">Routes</span>
-          <span className="w-12" />
+          <Link href="/passenger" className="text-sm font-medium text-abia">
+            Ride
+          </Link>
         </div>
       </header>
       <main className="mx-auto max-w-3xl space-y-4 px-4 py-6">
         <h1 className="text-xl font-semibold">Published routes</h1>
-        <p className="text-sm text-abia-muted">Demo corridor set — expand with real terminal data later.</p>
         {ROUTES.map((r) => (
           <article key={r.id} className="card p-5">
             <h2 className="text-base font-semibold">{r.name}</h2>
@@ -24,12 +25,12 @@ export default function RoutesPage() {
             </p>
             <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-abia-muted">Stops</p>
             <p className="mt-1 text-sm">{r.stops.join(" · ")}</p>
-            <p className="mt-2 text-xs text-abia">{r.fareNote}</p>
+            <p className="mt-2 text-sm text-abia">
+              You pay {formatNaira(r.subsidisedFare)}{" "}
+              <span className="text-abia-muted line-through">{formatNaira(r.fullFare)}</span>
+            </p>
           </article>
         ))}
-        <Link href="/passenger" className="btn-primary inline-flex">
-          Check next bus
-        </Link>
       </main>
     </div>
   );
